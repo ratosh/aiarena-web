@@ -36,7 +36,7 @@ ALLOWED_HOSTS = ['127.0.0.1']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'aiarena',
+        'NAME': 'aiarena_beta',
         'USER': 'aiarena',
         'PASSWORD': 'aiarena',
         'HOST': 'localhost',  # Or an IP Address that your DB is hosted on
@@ -188,6 +188,13 @@ AVATAR_CLEANUP_DELETED = True
 AVATAR_CACHE_ENABLED = False
 # pre-generate the most commonly used size
 AVATAR_AUTO_GENERATE_SIZES = (150,)
+AVATAR_GRAVATAR_FORCEDEFAULT = False
+AVATAR_DEFAULT_URL = "https://ai-arena.net/static/img/default_avatar.jpg"
+
+AVATAR_PROVIDERS = (
+    'avatar.providers.PrimaryAvatarProvider',
+    'avatar.providers.DefaultAvatarProvider',
+)
 
 ENVIRONMENT_TYPE = EnvironmentType.DEVELOPMENT
 
