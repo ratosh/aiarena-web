@@ -36,7 +36,7 @@ ALLOWED_HOSTS = ['127.0.0.1']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'aiarena_beta',
+        'NAME': 'aiarena',
         'USER': 'aiarena',
         'PASSWORD': 'aiarena',
         'HOST': 'localhost',  # Or an IP Address that your DB is hosted on
