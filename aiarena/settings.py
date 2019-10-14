@@ -63,6 +63,7 @@ DATABASES = {
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'registration',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -91,14 +92,14 @@ INSTALLED_APPS = [
     'wiki.plugins.help.apps.HelpConfig',
     'constance',
     'constance.backends.database',  # this should be removed by any env.py file overriding the constance backend
-    'debug_toolbar',  # This will be removed automatically in non-development environments
+    # 'debug_toolbar',  # This will be removed automatically in non-development environments
     'discord_bind',
     'sslserver',  # This will be removed automatically in non-development environments
 ]
 
 MIDDLEWARE = [
     # This will be removed automatically in non-development environments
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -220,6 +221,8 @@ LOGGING = {
 }
 
 WSGI_APPLICATION = 'aiarena.wsgi.application'
+
+ASGI_APPLICATION = "aiarena.routing.application"
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
