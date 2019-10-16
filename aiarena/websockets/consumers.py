@@ -25,21 +25,19 @@ class ChatConsumer(WebsocketConsumer):
         }))
 
 
-class HeartbeatConsumer(JsonWebsocketConsumer):
+class ArenaclientConsumer(JsonWebsocketConsumer):
     """
-    Option 1: Rely on the in-built websocket heartbeat.
-    Need to find out when disconnect is fired and whether this will server our purpose.
-    If disconnect is fired when a websocket times out, when this could be our heartbeat.
-    Option 2: use message sending as our heartbeat - a reliable fallback.
+    Websocket consumer for arena clients to maintain a live connection with the website.
     """
 
-    # todo: ensure arena clients can only register a heartbeat for matches they're assigned to.
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.channel_layer = get_channel_layer()
         self.match_id = self.scope['url_route']['kwargs']['match_id']
 
     def connect(self):
+        # todo: auth
+        # todo: verify the AC is the one assigned to this match
         self.accept()
         async_to_sync(self.channel_layer.group_add)(str(self.match_id), self.channel_name)
 
