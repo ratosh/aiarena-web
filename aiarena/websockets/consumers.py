@@ -1,6 +1,6 @@
 import json
 
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer, JsonWebsocketConsumer
 from ..core.models import Result, Match
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -25,14 +25,14 @@ class ChatConsumer(WebsocketConsumer):
         }))
 
 
-class HeartbeatConsumer(WebsocketConsumer):
+class HeartbeatConsumer(JsonWebsocketConsumer):
     """
     Option 1: Rely on the in-built websocket heartbeat.
     Need to find out when disconnect is fired and whether this will server our purpose.
     If disconnect is fired when a websocket times out, when this could be our heartbeat.
     Option 2: use message sending as our heartbeat - a reliable fallback.
     """
-    match_id = 0
+
     # todo: ensure arena clients can only register a heartbeat for matches they're assigned to.
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,14 +46,14 @@ class HeartbeatConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(str(self.match_id), self.channel_name)
 
-    def receive(self, text_data=None, bytes_data=None):
+    def receive(self, text_data=None, bytes_data=None, **kwargs):
         if text_data is not None and text_data == 'ping':
             self.send(text_data='pong')
 
     def cancel_match(self, event):
-        self.send(event['data'])
-    
-    @staticmethod 
+        self.send_json(event['data'])
+
+    @staticmethod
     @receiver(post_save, sender=Result)
     def result_signal_handler(sender, instance, **kwargs):
         if instance.type == 'MatchCancelled':
@@ -61,9 +61,9 @@ class HeartbeatConsumer(WebsocketConsumer):
             async_to_sync(channel_layer.group_send)(
                 str(instance.match.id),
                 {
-                    'type':'cancel_match', ## cancel_match function
+                    'type': 'cancel_match',  ## cancel_match function
                     'data': {
-                        'result':instance.type
-                        }
+                        'result': instance.type
+                    }
                 }
             )
