@@ -47,8 +47,7 @@ class HeartbeatConsumer(JsonWebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)(str(self.match_id), self.channel_name)
 
     def receive(self, text_data=None, bytes_data=None, **kwargs):
-        if text_data is not None and text_data == 'ping':
-            self.send(text_data='pong')
+        pass
 
     def cancel_match(self, event):
         self.send_json(event['data'])
