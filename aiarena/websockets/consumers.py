@@ -11,7 +11,7 @@ from channels.layers import get_channel_layer
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
-        
+
     def disconnect(self, close_code):
         pass
 
@@ -34,19 +34,22 @@ class HeartbeatConsumer(WebsocketConsumer):
     """
     match_id = 0
     # todo: ensure arena clients can only register a heartbeat for matches they're assigned to.
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.channel_layer = get_channel_layer()
+        self.match_id = self.scope['url_route']['kwargs']['match_id']
+
     def connect(self):
         self.accept()
-        match_id = self.scope['url_route']['kwargs']['match_id']
-        channel_layer = get_channel_layer()
-        async_to_sync(self.channel_layer.group_add)(str(match_id), self.channel_name)
+        async_to_sync(self.channel_layer.group_add)(str(self.match_id), self.channel_name)
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(str(match_id), self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(str(self.match_id), self.channel_name)
 
     def receive(self, text_data=None, bytes_data=None):
         if text_data is not None and text_data == 'ping':
             self.send(text_data='pong')
-    
+
     def cancel_match(self, event):
         self.send(event['data'])
     
@@ -64,4 +67,3 @@ class HeartbeatConsumer(WebsocketConsumer):
                         }
                 }
             )
-
