@@ -345,6 +345,12 @@ SITE_ID = 1
 
 SITE_PROTOCOL = 'https'
 
+CHANNEL_LAYERS={
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+     }
+}
+
 # override any of these settings with an env.py file
 try:
     from aiarena.env import *

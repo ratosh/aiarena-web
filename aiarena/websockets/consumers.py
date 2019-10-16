@@ -4,12 +4,14 @@ from channels.generic.websocket import WebsocketConsumer
 from ..core.models import Result, Match
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
-
+        
     def disconnect(self, close_code):
         pass
 
@@ -35,16 +37,31 @@ class HeartbeatConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
         match_id = self.scope['url_route']['kwargs']['match_id']
+        channel_layer = get_channel_layer()
+        async_to_sync(self.channel_layer.group_add)(str(match_id), self.channel_name)
 
     def disconnect(self, close_code):
-        pass
+        async_to_sync(self.channel_layer.group_discard)(str(match_id), self.channel_name)
 
     def receive(self, text_data=None, bytes_data=None):
         if text_data is not None and text_data == 'ping':
             self.send(text_data='pong')
-        
-@receiver(post_save, sender=Result)
-def result_signal_handler(sender, instance, **kwargs):
-    if instance.type == 'MatchCancelled':
-        pass ##Cancel the match on the client
+    
+    def cancel_match(self, event):
+        self.send(event['data'])
+    
+    @staticmethod 
+    @receiver(post_save, sender=Result)
+    def result_signal_handler(sender, instance, **kwargs):
+        if instance.type == 'MatchCancelled':
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                str(instance.match.id),
+                {
+                    'type':'cancel_match', ## cancel_match function
+                    'data': {
+                        'result':instance.type
+                        }
+                }
+            )
 
