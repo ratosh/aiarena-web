@@ -43,12 +43,13 @@
                     <input class="profile-link-button" type="submit" value="Link Discord"/>
                 {% endif %}
             </form>
+            {% if user.patreonaccountbind %}
             <form action="{% url 'patreon_bind_index' %}">
-                {% if user.patreonaccountbind %}
-                    <input class="profile-linked-button" type="submit" value="Link Patreon" disabled/>
-                {% else %}
-                    <input class="profile-link-button" type="submit" value="Link Patreon"/>
-                {% endif %}
+                <input class="profile-linked-button" type="submit" value="Link Patreon" disabled/>
+            {% else %}
+            <form action="{% url 'patreon_bind_index' %}" class="tooltip-left" data-tooltip="Link your Patreon to receive donor benefits.">
+                <input class="profile-link-button" type="submit" value="Link Patreon"/>
+            {% endif %}
             </form>
             <br/>
             <form action="{% url 'profile_token' %}">
