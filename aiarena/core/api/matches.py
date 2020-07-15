@@ -35,7 +35,8 @@ class Matches:
 
     @staticmethod
     def start_match(match, assign_to) -> bool:
-        match.lock_me()  # lock self to avoid race conditions
+        if not match.lock_me(nowait=True):  # lock self to avoid race conditions
+            return False
         if match.started is None:
             # Avoid starting a match when a participant is not available
             participations = MatchParticipation.objects.select_for_update().filter(match=match)
@@ -61,7 +62,7 @@ class Matches:
     @staticmethod
     def _attempt_to_start_a_requested_match(requesting_user: User):
         # Try get a requested match
-        matches = Match.objects.filter(started__isnull=True, requested_by__isnull=False).select_for_update().order_by('created')
+        matches = Match.objects.filter(started__isnull=True, requested_by__isnull=False).order_by('?')
         return Matches._start_and_return_a_match(requesting_user, matches)
 
     @staticmethod
@@ -75,11 +76,11 @@ class Matches:
     @staticmethod
     def _attempt_to_start_a_ladder_match(requesting_user: User, for_round):
         if for_round is not None:
-            ladder_matches_to_play = Match.objects.filter(started__isnull=True, requested_by__isnull=True, round=for_round)\
-                .select_for_update().order_by('round_id')
+            ladder_matches_to_play = Match.objects.filter(started__isnull=True, requested_by__isnull=True,
+                                                          round=for_round).order_by('round_id')
         else:
             ladder_matches_to_play = Match.objects.filter(started__isnull=True, requested_by__isnull=True)\
-                .select_for_update().order_by('round_id')
+                .order_by('round_id')
         if ladder_matches_to_play.count() > 0:
             participants_of_ladder_matches_to_play = []
             [participants_of_ladder_matches_to_play.extend(m.matchparticipation_set.all()) for m in
