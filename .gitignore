@@ -17,3 +17,6 @@ private-media/
 # coverage
 .coverage
 coverage-reports
+
+# Sphinx documents that have been built
+doc/build/

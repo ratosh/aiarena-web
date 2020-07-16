@@ -15,8 +15,8 @@ _LOCAL_DIRECTORY = os.path.dirname(__file__)
 _STANDARD_REQUIREMENTS_FILE = os.path.join(_LOCAL_DIRECTORY, "requirements.txt")
 _ENVIRONMENT_REQUIREMENTS_FILE = os.path.join(_LOCAL_DIRECTORY, f"requirements.{ENVIRONMENT_TYPE.name}.txt")
 _PROJECT_ROOT_DIRECTORY = os.path.join(_LOCAL_DIRECTORY, "..")
-_DEFAULT_PIP_BINARY = "pip3"
-_DEFAULT_PYTHON_BINARY = "python3"
+_DEFAULT_PIP_BINARY = "pip"
+_DEFAULT_PYTHON_BINARY = "python"
 
 # Require Python 3.7
 _PYTHON_REQUIRED_VERSION_MAJOR = 3

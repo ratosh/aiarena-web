@@ -1,4 +1,4 @@
-# Install
+# Installation Guide
 
 1. Clone this project by doing a recursive clone:
     ```bash
