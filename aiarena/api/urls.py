@@ -20,6 +20,7 @@ router.register(r'users', publicapi_views.UserViewSet, basename='api_user')
 router.register(r'arenaclient/matches', arenaclient_views.MatchViewSet, basename='match')  # todo: prefix basename with ac
 router.register(r'arenaclient/results', arenaclient_views.ResultViewSet, basename='result')  # todo: prefix basename with ac
 router.register(r'arenaclient/set-status', arenaclient_views.SetArenaClientStatusViewSet, basename='api_ac_set_status')
+router.register(r'arenaclient/get-config', arenaclient_views.ConfigViewSet, basename='api_ac_get_config')
 
 # stream
 router.register(r'stream/next-replay', stream_views.StreamNextReplayViewSet, basename='api_stream_nextreplay')

@@ -17,7 +17,7 @@ from aiarena.api.arenaclient.exceptions import LadderDisabled
 from aiarena.core.api import Bots, Matches
 from aiarena.core.events import EVENT_MANAGER
 from aiarena.core.events import MatchResultReceivedEvent
-from aiarena.core.models import Bot, Map, Match, MatchParticipation, Result, SeasonParticipation
+from aiarena.core.models import Bot, Map, Match, MatchParticipation, Result, SeasonParticipation, ArenaClientConfig
 from aiarena.core.models.arena_client_status import ArenaClientStatus
 from aiarena.core.permissions import IsArenaClientOrAdminUser, IsArenaClient
 from aiarena.core.validators import validate_not_inf, validate_not_nan
@@ -420,3 +420,37 @@ def run_consecutive_crashes_check(triggering_participant: MatchParticipation):
 
     # If we get to here, all the results were crashes, so take action
     Bots.disable_and_send_crash_alert(triggering_participant.bot)
+
+
+class ConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArenaClientConfig
+        fields = (
+            'ROUNDS_PER_RUN',
+            'SHUTDOWN_AFTER_RUN',
+            'DEBUG_MODE',
+            'PYTHON',
+            'CLEANUP_BETWEEN_ROUNDS',
+            'SECURE_MODE',
+            'RUN_PLAYER1_AS_USER',
+            'RUN_PLAYER2_AS_USER',
+            'LOGGING_LEVEL',
+            'MAX_GAME_TIME',
+            'MAX_REAL_TIME',
+            'MAX_FRAME_TIME',
+            'STRIKES',
+            'REALTIME',
+            'DISABLE_DEBUG',
+            'VALIDATE_RACE'
+        )
+        ref_name = 'arenaclient'
+
+
+class ConfigViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ArenaClientConfig.objects.all()
+    serializer_class = ConfigSerializer
+    permission_classes = [IsArenaClientOrAdminUser]
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(arenaclient=self.request.user)
+        return queryset
